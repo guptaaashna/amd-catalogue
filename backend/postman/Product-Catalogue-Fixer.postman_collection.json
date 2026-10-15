@@ -1,0 +1,72 @@
+{
+  "info": {
+    "_postman_id": "89967aa3-b78a-47a4-a4c7-00ad5aa7f22e",
+    "name": "Product Catalogue Fixer API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "vendorId", "value": "replace-with-vendor-uuid" },
+    { "key": "productId", "value": "replace-with-product-uuid" },
+    { "key": "suggestionId", "value": "replace-with-suggestion-uuid" }
+  ],
+  "item": [
+    { "name": "Health", "request": { "method": "GET", "url": "{{baseUrl}}/api/health" } },
+    { "name": "List vendors", "request": { "method": "GET", "url": "{{baseUrl}}/api/vendors?page=1&pageSize=20" } },
+    {
+      "name": "Create vendor",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"name\":\"Example Vendor\",\"slug\":\"example-vendor\",\"email\":\"catalogue@example.com\"}" },
+        "url": "{{baseUrl}}/api/vendors"
+      }
+    },
+    { "name": "Search products", "request": { "method": "GET", "url": "{{baseUrl}}/api/products?search=desk&category=Office%20Furniture&page=1&pageSize=20" } },
+    {
+      "name": "Create product",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"vendorId\":\"{{vendorId}}\",\"sku\":\"DESK-001\",\"title\":\"Standing Desk\",\"description\":\"Sample\",\"category\":\"Office\",\"price\":199.99,\"currency\":\"USD\",\"attributes\":{\"color\":\"oak\"}}" },
+        "url": "{{baseUrl}}/api/products"
+      }
+    },
+    { "name": "Export products CSV", "request": { "method": "GET", "url": "{{baseUrl}}/api/products/export.csv" } },
+    {
+      "name": "Import products CSV",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "vendorId", "value": "{{vendorId}}", "type": "text" },
+            { "key": "file", "type": "file", "src": [] }
+          ]
+        },
+        "url": "{{baseUrl}}/api/imports"
+      }
+    },
+    {
+      "name": "Upsert translation",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"title\":\"Bureau debout\",\"description\":\"Sample translation\"}" },
+        "url": "{{baseUrl}}/api/products/{{productId}}/translations/fr"
+      }
+    },
+    {
+      "name": "Create AI suggestion",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"productId\":\"{{productId}}\",\"field\":\"title\",\"proposedValue\":\"Improved product title\",\"rationale\":\"Clearer title\"}" },
+        "url": "{{baseUrl}}/api/suggestions"
+      }
+    },
+    { "name": "Approve suggestion", "request": { "method": "POST", "url": "{{baseUrl}}/api/suggestions/{{suggestionId}}/approve" } },
+    { "name": "Reject suggestion", "request": { "method": "POST", "url": "{{baseUrl}}/api/suggestions/{{suggestionId}}/reject" } },
+    { "name": "List audit logs", "request": { "method": "GET", "url": "{{baseUrl}}/api/audit-logs?page=1&pageSize=20" } }
+  ]
+}

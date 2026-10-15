@@ -31,7 +31,7 @@ The API defaults to `http://localhost:4000`. Configure `PORT` and comma-separate
 | `npm run dev` | Start the TypeScript server with reload |
 | `npm run build` | Generate Prisma Client and compile TypeScript |
 | `npm start` | Run the compiled server |
-| `npm test` | Run unit and HTTP health tests |
+| `npm test` | Create/reuse isolated `catalogue_test_db`, apply pending migrations, then run Vitest unit and PostgreSQL integration tests |
 | `npm run db:migrate` | Create/apply a development migration |
 | `npm run db:deploy` | Apply checked-in migrations |
 | `npm run db:seed` | Insert idempotent sample vendor/products |
@@ -67,4 +67,4 @@ CSV imports require `sku,title,category,price`; optional columns are `descriptio
 
 ## Postman and tests
 
-Import `postman/Product-Catalogue-Fixer.postman_collection.json` into Postman. Set its IDs after creating sample records. Run `npm test` for the database-independent automated tests; API data endpoints require the configured PostgreSQL database.
+Import `postman/Product-Catalogue-Fixer.postman_collection.json` into Postman. Set its IDs after creating sample records. `npm test` uses the PostgreSQL credentials in `.env` to create `catalogue_test_db` if missing and applies pending migrations without resetting either database. The configured account needs permission to create databases when the test database is first provisioned. Integration tests verify the live port-4000 health endpoint and run all CRUD/import/export/suggestion checks against the separate test database; they clean up their uniquely scoped records afterward.

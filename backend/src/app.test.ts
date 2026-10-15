@@ -1,19 +1,23 @@
-import assert from "node:assert/strict";
 import { once } from "node:events";
-import test from "node:test";
+import { afterAll, describe, expect, it } from "vitest";
 import { app } from "./app";
 
-test("health endpoint reports service status", async () => {
+describe("health endpoint", () => {
   const server = app.listen(0);
-  await once(server, "listening");
-  try {
-    const address = server.address();
-    assert.ok(address && typeof address !== "string");
-    const response = await fetch(`http://127.0.0.1:${address.port}/api/health`);
-    assert.equal(response.status, 200);
-    assert.deepEqual(await response.json(), { status: "ok" });
-  } finally {
+
+  afterAll(async () => {
     server.close();
     await once(server, "close");
-  }
+  });
+
+  it("reports service status", async () => {
+    if (!server.listening) await once(server, "listening");
+    const address = server.address();
+    expect(address).not.toBeNull();
+    if (!address || typeof address === "string") throw new Error("Test server did not bind a TCP port");
+    const baseUrl = `http://127.0.0.1:${address.port}`;
+    const response = await fetch(`${baseUrl}/api/health`);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ status: "ok" });
+  });
 });

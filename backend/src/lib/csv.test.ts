@@ -1,21 +1,23 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { describe, expect, it } from "vitest";
 import { csvProductSchema, parseAttributes, parseProductCsv } from "./csv";
 
-test("parses normalized CSV headers and preserves original values", () => {
-  const parsed = parseProductCsv(" SKU ,Title,Category,Price\nA-1,Desk,Office,24.50\n");
-  assert.deepEqual(parsed.errors, []);
-  assert.equal(parsed.rows[0].sku, "A-1");
-  assert.equal(parsed.rows[0].price, "24.50");
-});
-
-test("rejects attributes that are not JSON objects", () => {
-  assert.throws(() => parseAttributes("[1,2]"), /attributes must be a JSON object/);
-});
-
-test("reports malformed CSV attributes as validation errors", () => {
-  const result = csvProductSchema.safeParse({
-    sku: "A-1", title: "Desk", category: "Office", price: "10", attributes: "{bad json",
+describe("CSV helpers", () => {
+  it("parses normalized headers and preserves source values", () => {
+    const parsed = parseProductCsv(" SKU ,Title,Category,Price\nA-1,Desk,Office,24.50\n");
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows[0].sku).toBe("A-1");
+    expect(parsed.rows[0].price).toBe("24.50");
   });
-  assert.equal(result.success, false);
+
+  it("rejects attributes that are not JSON objects", () => {
+    expect(() => parseAttributes("[1,2]")).toThrow(/attributes must be a JSON object/);
+  });
+
+  it("reports malformed CSV attributes as validation errors", () => {
+    const result = csvProductSchema.safeParse({
+      sku: "A-1", title: "Desk", category: "Office", price: "10", attributes: "{bad json",
+    });
+    assert.equal(result.success, false);
+  });
 });

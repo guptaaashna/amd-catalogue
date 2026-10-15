@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "description": "Product Catalogue Fixer REST API",
-  "main": "dist/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "prisma generate && tsc -p tsconfig.json",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "test": "tsx --test src/lib/csv.test.ts src/app.test.ts",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",

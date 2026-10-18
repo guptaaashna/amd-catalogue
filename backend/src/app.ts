@@ -31,6 +31,7 @@ app.use(cors({
     }
     callback(new HttpError(403, "Origin is not allowed by CORS"));
   },
+  credentials: true,
 }));
 app.use(express.json({ limit: "2mb" }));
 
